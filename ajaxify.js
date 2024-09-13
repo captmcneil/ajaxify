@@ -1,5 +1,5 @@
 /**
- * Setting the class 'open-modal' on a hyperlink will open the target URL inline in the current document,
+ * Setting the class 'ajaxify' on a hyperlink will open the target URL inline in the current document,
  * without an IFrame, either as a bootstrap modal or in a specified container element (the 'target').
  * The hyperlinks' click will be converted into an ajax request, and the contents of the response patched into the target element.
  * 
@@ -51,10 +51,8 @@ $(function () {
 		// this keeps the page clean of duplicate IDs and events on nodes that will never again been shown
 		// the contents of the modal will be removed, when the modal is closed
 		const modal = createModal();
-
-		// lazily add the modal to the document
-		let isAddedToBody = false;
-
+		$('body').append(modal);
+		
 		function createModalCloseButton() {
 			if (isBootstrap3 || isBootstrap4) {
 				return $('<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>')
@@ -98,16 +96,16 @@ $(function () {
 				currentTarget: modal
 			};
 
-			$('body').trigger('modal:modal-closing', args);
+			$('body').trigger('ajaxify:closing', args);
 			that.clear(args);
-			$('body').trigger('modal:modal-closed', args);
+			$('body').trigger('ajaxify:closed', args);
 		});
 
 		/**
 		 * Handles a user request to close the panel.
 		 */
 		modal.on(
-			'modal:modal-close',
+			'ajaxify:close',
 			() => that.hide({
 				currentTarget: modal
 			}));
@@ -118,9 +116,9 @@ $(function () {
 			/**
 			 * Puts HTML content into the modal.
 			 *
-			 * @param {string} bodyContent The content of the modal body as HTML.
-			 * @param {string} title The modal's title text.
-			 * @param {string} size The size (either nothing for default size, large or small).
+			 * @param {string} bodyContent The HTML content to add.
+			 * @param {string} title The title text (only applies to modals).
+			 * @param {string} size The size (either nothing for default size, large or small, only applies to modals).
 			 */
 			fill: function (bodyContent, title, size, args) {
 				that.clear(args);
@@ -155,36 +153,32 @@ $(function () {
 			},
 
 			/**
-			 * Lazily adds the modal to the page and displays it.
+			 * Lazily adds the modal to the page, if necessary.
+			 */
+			append: function (_, args) {
+				// nothing to do, we have one modal and we reuse it
+			},
+
+			/**
+			 * Displays the modal, if it is not already visible.
 			 */
 			show: function (_, args) {
-				// lazily add the modal to the document - note that we only have one modal which we reuse
-				if (!isAddedToBody) {
-					$('body').append(modal);
-					isAddedToBody = true;
-				}
-
 				// show the modal, if it is not already visible
 				modal.modal('show');
 
-				$('body').trigger('modal:modal-opened', args);
+				$('body').trigger('ajaxify:opened', args);
 			},
-			
+
 			/**
 			 * Hides the modal and clears it.
 			 */
 			hide: function (args) {
-				$('body').trigger('modal:modal-closing', args);
-
-				// lazily add the modal to the document - note that we only have one modal which we reuse
-				if (!isAddedToBody) {
-					return;
-				}
+				$('body').trigger('ajaxify:closing', args);
 
 				modal.modal('hide');
 				that.clear(args);
 
-				$('body').trigger('modal:modal-closed', args);
+				$('body').trigger('ajaxify:closed', args);
 			},
 
 			/**
@@ -200,7 +194,7 @@ $(function () {
 				modalDialog.removeClass('modal-sm');
 				modalDialog.removeClass('modal-lg');
 
-				$('body').trigger('modal:modal-cleared', args);
+				$('body').trigger('ajaxify:cleared', args);
 			}
 		};
 
@@ -219,7 +213,7 @@ $(function () {
 		 * Handles a user request to close the panel.
 		 */
 		panel.on(
-			'modal:modal-close',
+			'ajaxify:close',
 			() => that.hide({
 				currentTarget: panel
 			}));
@@ -228,11 +222,11 @@ $(function () {
 			element: panel,
 
 			/**
-			 * Puts HTML content into the modal.
+			 * Puts HTML content into the panel.
 			 *
-			 * @param {string} bodyContent The content of the modal body as HTML.
-			 * @param {string} title The modal's title text.
-			 * @param {string} size The size (either nothing for default size, large or small).
+			 * @param {string} bodyContent The HTML content to add.
+			 * @param {string} title The title text (only applies to modals).
+			 * @param {string} size The size (either nothing for default size, large or small, only applies to modals).
 			 */
 			fill: function (bodyContent, title, size, args) {
 				that.clear(args);
@@ -240,41 +234,60 @@ $(function () {
 			},
 
 			/**
-			 * Lazily adds the modal to the page and displays it.
+			 * Lazily adds the panel into the target container, if necessary.
 			 * 
 			 * @param {string} targetContainerSelector A DOM selector that determines where the request content should be placed on the page.
 			 */
-			show: function (targetContainerSelector, args) {
+			append: function (targetContainerSelector, args) {
 				if (!targetContainerSelector) {
-					console.error('OpenAsModal: Target element must be specified when modals are disabled.');
+					console.error('ajaxify: Target element must be specified when modals are disabled.');
 					return;
 				}
 
 				const targetContainer = $(targetContainerSelector);
 				if (targetContainer.length !== 1) {
-					console.error('OpenAsModal: Target element not found or ambiguous selector.');
+					console.error('ajaxify: Target element not found or ambiguous selector.');
 					return;
 				}
 
 				panel.parent().removeClass('in');
 				targetContainer.append(panel);
+			},
+
+			/**
+			 * Displays the panel, if it is not already visible.
+			 * 
+			 * @param {string} targetContainerSelector A DOM selector that determines where the request content should be placed on the page.
+			 */
+			show: function (targetContainerSelector, args) {
+				if (!targetContainerSelector) {
+					console.error('ajaxify: Target element must be specified when modals are disabled.');
+					return;
+				}
+
+				const targetContainer = $(targetContainerSelector);
+				if (targetContainer.length !== 1) {
+					console.error('ajaxify: Target element not found or ambiguous selector.');
+					return;
+				}
+
 				targetContainer.addClass('in');
 
-				$('body').trigger('modal:modal-opened', args);
+				$('body').trigger('ajaxify:opened', args);
 			},
-			
+
 			/**
 			 * Hides the panel and clears it.
 			 */
 			hide: function (args) {
-				$('body').trigger('modal:modal-closing', args);
+				$('body').trigger('ajaxify:closing', args);
 
 				panel.parent().removeClass('in');
 
 				// let animaions run through
 				setTimeout(function () {
 					that.clear();
-					$('body').trigger('modal:modal-closed', args);
+					$('body').trigger('ajaxify:closed', args);
 				}, 300);
 			},
 
@@ -284,7 +297,7 @@ $(function () {
 			clear: function (args) {
 				panel.empty();
 
-				$('body').trigger('modal:modal-cleared', args);
+				$('body').trigger('ajaxify:cleared', args);
 			}
 		};
 
@@ -295,7 +308,7 @@ $(function () {
 	 * Parses a response and gets the HTML contents of the body, if it exists.
 	 * 
 	 * @param {string} responseText The HTML code of the response we want to parse.
-	 * @param {string} contentSelector The DOM selector that selects the part of the page that should be rendered inside the modal's body.
+	 * @param {string} contentSelector The DOM selector that selects the part of the page that should be rendered.
 	 * @return The contents of the response document's body as a jQuery.
 	 */
 	function parseBody(responseText, contentSelector) {
@@ -323,22 +336,24 @@ $(function () {
 	/**
 	 * Reads the HTML contents from a response, and puts it into the target element.
 	 *
-	 * @param {any} response The AJAX response, as in the ajax success callback.
-	 * @param {any} settings Object containing:
-	 * 'title': the modal's title text, the modal size (either nothing for default size, large or small),
-	 * 'contentSelector': the DOM selector that selects the part of the page that should be rendered inside the modal's body and other values,
-	 * 'handleFormSubmit': a flag determining whether the response of form submits of the content should be displayed in the modal,
+	 * @param {object} response The AJAX response, as in the ajax success callback.
+	 * @param {object} target The target object holding the contents of the response.
+	 * @param {object} settings Object containing:
+	 * 'title': the modal's title text (only applies to modals),
+	 * 'size': the target element size (empty for default size, large or small, only applies to modals),
+	 * 'contentSelector': the DOM selector that selects the part of the page that should be rendered,
+	 * 'handleFormSubmit': a flag determining whether the response of form submits of the content should be kept inside the target,
 	 * 'targetContainerSelector': an optional DOM selector that determines where the request content should be placed on the page.
-	 * @return The contents of the response document as a jQuery, that were added to the modal body.
 	 */
 	function openResponse(response, target, settings, args) {
 		const responseText = response.responseText;
 		if (!responseText) {
-			console.error('OpenAsModal: The page could not be displayed (responseText was empty).');
+			console.error('ajaxify: The page could not be displayed (responseText was empty).');
 			const errorMessage = $('<p>');
 			errorMessage.text('' + response.status + ': ' + response.statusText);
 
 			target.fill(errorMessage, settings.title, settings.size, args);
+			target.append(settings.targetContainerSelector, args);
 			target.show(settings.targetContainerSelector, args);
 
 			return;
@@ -346,9 +361,10 @@ $(function () {
 
 		const bodyContent = parseBody(responseText, settings.contentSelector);
 		if (!bodyContent) {
-			console.error('OpenAsModal: The page could not be displayed (no body content found).');
+			console.error('ajaxify: The page could not be displayed (no body content found).');
 
 			target.fill($('<p>The page could not be displayed.</p>'), title, size, args);
+			target.append(settings.targetContainerSelector, args);
 			target.show(settings.targetContainerSelector, args);
 
 			return;
@@ -371,7 +387,7 @@ $(function () {
 				const method = form.attr('method') || 'get';
 
 				if (!url) {
-					console.error('OpenAsModal: Form submit could not be ajax-ified, because the form action is empty.');
+					console.error('ajaxify: Form submit could not be ajax-ified, because the form action is empty.');
 					return false;
 				}
 
@@ -381,7 +397,7 @@ $(function () {
 					settings: settings
 				};
 
-				$('body').trigger('modal:modal-opening', args);
+				$('body').trigger('ajaxify:opening', args);
 
 				$.ajax({
 					url: url,
@@ -402,17 +418,18 @@ $(function () {
 				bodyContent.on('submit', 'form', ajaxSubmitHandler);
 			}
 		}
-
-		// raise an event so scripts have a chance to initialize the modal page
-		$('body').trigger('modal:ajax-content-loaded', args);
+		
+		target.append(settings.targetContainerSelector, args);
+		
+		$('body').trigger('ajaxify:ajax-content-loaded', args);
 
 		target.show(settings.targetContainerSelector, args);
 	}
 
 	/**
-	 * Registers an event handler on all links that should be opened as modals.
+	 * Registers an event handler on all links that should be opened inline.
 	 */
-	$(document).on('click', '.open-modal', function (event) {
+	$(document).on('click', '.ajaxify', function (event) {
 		const size = $(event.currentTarget).data('modal-size'),
 			title = $(event.currentTarget).attr('title'),
 			url = $(event.currentTarget).attr('href') || $(event.currentTarget).data('target'),
@@ -421,7 +438,7 @@ $(function () {
 			targetContainerSelector = $(event.currentTarget).data('target-container-selector');
 
 		if (!url) {
-			console.error('OpenAsModal: Element cannot be ajax-ified, because neither a href nor a data-target are specified.');
+			console.error('ajaxify: Element cannot be ajaxified, because neither a href nor a data-target are specified.');
 			return false;
 		}
 
@@ -443,11 +460,9 @@ $(function () {
 			currentTarget: target.element,
 			settings: settings
 		};
-		
-		$('body').trigger('modal:modal-opening', args);
 
-		// ruft die URL ab, liest den body > main ab und packt ihn in ein Bootstrap-Modal
-		// Achtung: Skripte und CSS werden dabei nicht mitgeladen
+		$('body').trigger('ajaxify:opening', args);
+		
 		$.ajax({
 			url: url,
 			complete: function (data) {
