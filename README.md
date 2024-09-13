@@ -1,5 +1,5 @@
 # ajaxify
-Patches the response of an hyperlink into the current page, like a div or bootstrap modal, without using IFrames.
+Patches the response of a hyperlink into the current page, like a div or bootstrap modal, without using IFrames.
 
 ## Dependencies
 
@@ -12,7 +12,7 @@ The response of this link will be opened in a bootstrap modal:
 
 `<a href="/my-url" title="This is a modal" class="ajaxify">Open my url in a modal!</a>`
 
-Specify a `data-target-container-selector` to open the link in your own HTML element instead:
+You can specify a `data-target-container-selector` to open the link in your own HTML element instead. This also removes any dependency on bootstrap:
 
 `<a href="/my-url" class="ajaxify" data-target-container-selector="#my-container">Open my url in a div!</a>`
 
@@ -22,8 +22,8 @@ The following attributes can be added to the `<a>` element:
 
 | Attribute name | Description |
 | - | - |
-| `title` | The title of the modal, if `data-target-container-selector` is not specified. Will be rendered as  `<h5>` in the `.modal-header`. |
 | `href` / `data-target` | The URL to open. |
+| `title` | The title of the modal, if `data-target-container-selector` is not specified. Will be rendered as  `<h5>` in the `.modal-header`. |
 | `data-modal-size` | Optional, possible values „small“ or „large“. Ignored, when `data-target-container-selector` is specified. |
 | `data-content-selector` | Optional. DOM selector for the response document for the content that should be cut out and patched inside the target element. By default, a `<main>` element will be searched. If neither it, or the selector exists, the whole `<body>` will be taken. |
 | `data-handle-form-submit`	| Optional. When `true`, the `action` of `<form>`s will be performed as AJAX requests and patched into the current document, instead of replacing the page. This has limitations, amongst others, forms with `enctype=multipart/form-data` won't work. Default is `false`. |
