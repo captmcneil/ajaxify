@@ -25,9 +25,9 @@ The following attributes can be added to the `<a>` element:
 | `href` / `data-target` | The URL to open. |
 | `title` | The title of the modal, if `data-target-container-selector` is not specified. Will be rendered as  `<h5>` in the `.modal-header`. |
 | `data-modal-size` | Optional, possible values „small“ or „large“. Ignored, when `data-target-container-selector` is specified. |
-| `data-content-selector` | Optional. DOM selector for the response document for the content that should be cut out and patched inside the target element. By default, a `<main>` element will be searched. If neither it, or the selector exists, the whole `<body>` will be taken. |
-| `data-handle-form-submit`	| Optional. When `true`, the `action` of `<form>`s will be performed as AJAX requests and patched into the current document, instead of replacing the page. This has limitations, amongst others, forms with `enctype=multipart/form-data` won't work. Default is `false`. |
-| `data-target-container-selector` | Optional. DOM selector for a target element, in which the response should be patched into. When not specified, a bootstrap modal will be used. |
+| `data-content-selector` | Optional. DOM selector for the response documents' content that should be cut out and patched inside the target element. By default, a `<main>` element will be searched. If neither it nor the selector exists, the whole `<body>` will be used. |
+| `data-handle-form-submit`	| Optional. When `true`, the `action` of `<form>`s will be performed as AJAX requests and patched into the current document, instead of replacing the whole page. This has limitations, for example, forms with `enctype=multipart/form-data` won't work. Default is `false`. |
+| `data-target-container-selector` | Optional. DOM selector for a target element, into which the response should be patched. When not specified, a bootstrap modal will be created. |
 
 ## Events
 
