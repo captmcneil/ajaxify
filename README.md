@@ -27,10 +27,10 @@ The response of this link will be opened in a bootstrap modal:
 
 | Event name | Description |
 | - | - |
-| `modal:modal-opening` | Triggered, when a request has been started, before the response has been received. |
-| `modal:ajax-content-loaded` | Triggered, when the request is complete and the response could be parsed. When the request was not successful, this event may not be fired. This event is suitable to perform page initialization code, that would otherwise occur in the `document.ready` event or on `window.load`. |
-| `modal:modal-opened` | Triggered, after the request has completed, and the target element has been opened. This event also fires, when `ajax-content-loaded` has not been fired (i.e., an error occured). |
-| `modal:modal-cleared` | Triggered, when the contents of the target are cleared, or being replaced by a subsequent request. |
-| `modal:modal-close` | This event is not issued by the component, but can be triggered by the developer to manually close the target / modal. This implicitly calls the events `modal-closing` and `modal-closed`. This is useful when you provide your own `data-target-container-selector`, and avoid Bootstrap modals, and thus have to provide your own close button. Fire this event on the `.ajax-response-target` (the child element of your `data-target-container-selector`) you want to close. For example: `<button type="button" onclick="$(this).closest('.ajax-response-target').trigger('modal:modal-close')">Close</button>` |
-| `modal:modal-closing` | Triggered, after a close operation on the target has been issued. |
-| `modal:modal-closed` | Triggered, after the target has been closed. Suitable for reloading the page after an edit operation, for example. |
+| `ajaxify:opening` | Triggered, when a request has been started, before the response has been received. |
+| `ajaxify:ajax-content-loaded` | Triggered, when the request is complete and the response could be parsed. When the request was not successful, this event may not be fired. This event is suitable to perform page initialization code that would otherwise occur in the `document.ready` event or on `window.load`. |
+| `ajaxify:opened` | Triggered, after the request has completed, and the target element has been opened. This event also fires, when `ajax-content-loaded` has not been fired (i.e., a non-200 status code was received). |
+| `ajaxify:cleared` | Triggered, when the contents of the target are cleared, or being replaced by a subsequent request. |
+| `ajaxify:close` | This event is not issued by the component, but can be triggered by the developer to manually close the target / modal. This implicitly calls the events `modal-closing` and `modal-closed`. This is useful when you provide your own `data-target-container-selector` and thus to implement your own close button. Fire this event on the `.ajax-response-target` (the child element of your `data-target-container-selector`) you want to close. For example: `<button type="button" onclick="$(this).closest('.ajax-response-target').trigger('modal:modal-close')">Close</button>` |
+| `ajaxify:closing` | Triggered, after a close operation on the target has been issued. |
+| `ajaxify:closed` | Triggered, after the target has been closed. Suitable for reloading the page after an edit operation, for example. |
