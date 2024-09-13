@@ -11,7 +11,7 @@
  * - the document.ready event will not be fired again for the requested page
  * - none of the requested page's link, script or style tags will be loaded
  */
-$(function () {
+(function () {
 	let modalTarget;
 	let panelTarget;
 
