@@ -52,10 +52,10 @@
 		// the contents of the modal will be removed, when the modal is closed
 		const modal = createModal();
 		$('body').append(modal);
-		
+
 		function createModalCloseButton() {
 			if (isBootstrap3 || isBootstrap4) {
-				return $('<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>')
+				return $('<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>')
 			} else {
 				return $('<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>')
 			}
@@ -93,7 +93,7 @@
 		 */
 		modal.on('hidden.bs.modal', function () {
 			const args = {
-				currentTarget: modal
+				target: that
 			};
 
 			$('body').trigger('ajaxify:closing', args);
@@ -107,11 +107,11 @@
 		modal.on(
 			'ajaxify:close',
 			() => that.hide({
-				currentTarget: modal
+				target: that
 			}));
 
 		const that = {
-			element: modal,
+			element: modal.get(0),
 
 			/**
 			 * Puts HTML content into the modal.
@@ -215,11 +215,11 @@
 		panel.on(
 			'ajaxify:close',
 			() => that.hide({
-				currentTarget: panel
+				target: that
 			}));
 
 		const that = {
-			element: panel,
+			element: panel.get(0),
 
 			/**
 			 * Puts HTML content into the panel.
@@ -313,7 +313,7 @@
 	 */
 	function parseBody(responseText, contentSelector) {
 		const bodyMatchArray = responseText.match(/<body[^>]*>[\s\S]*<\/body>/gi);
-		if (bodyMatchArray.length === 0) {
+		if (!bodyMatchArray || bodyMatchArray.length === 0) {
 			return undefined;
 		}
 
@@ -337,16 +337,11 @@
 	 * Reads the HTML contents from a response, and puts it into the target element.
 	 *
 	 * @param {object} response The AJAX response, as in the ajax success callback.
-	 * @param {object} target The target object holding the contents of the response.
-	 * @param {object} settings Object containing:
-	 * 'title': the modal's title text (only applies to modals),
-	 * 'size': the target element size (empty for default size, large or small, only applies to modals),
-	 * 'contentSelector': the DOM selector that selects the part of the page that should be rendered,
-	 * 'handleFormSubmit': a flag determining whether the response of form submits of the content should be kept inside the target,
-	 * 'targetContainerSelector': an optional DOM selector that determines where the request content should be placed on the page.
 	 */
-	function openResponse(response, target, settings, args) {
+	function openResponse(response, args) {
 		const responseText = response.responseText;
+		const target = args.target;
+		const settings = args.settings;
 		if (!responseText) {
 			console.error('ajaxify: The page could not be displayed (responseText was empty).');
 			const errorMessage = $('<p>');
@@ -363,7 +358,7 @@
 		if (!bodyContent) {
 			console.error('ajaxify: The page could not be displayed (no body content found).');
 
-			target.fill($('<p>The page could not be displayed.</p>'), title, size, args);
+			target.fill($('<p>The page could not be displayed.</p>'), settings.title, settings.size, args);
 			target.append(settings.targetContainerSelector, args);
 			target.show(settings.targetContainerSelector, args);
 
@@ -405,7 +400,7 @@
 					data: form.serialize(),
 					dataType: 'text/html',
 					complete: function (data) {
-						openResponse(data, target, settings, args);
+						openResponse(data, args);
 					}
 				});
 			}
@@ -418,9 +413,9 @@
 				bodyContent.on('submit', 'form', ajaxSubmitHandler);
 			}
 		}
-		
+
 		target.append(settings.targetContainerSelector, args);
-		
+
 		$('body').trigger('ajaxify:ajax-content-loaded', args);
 
 		target.show(settings.targetContainerSelector, args);
@@ -457,16 +452,16 @@
 
 		const args = {
 			url: url,
-			currentTarget: target.element,
+			target: target,
 			settings: settings
 		};
 
 		$('body').trigger('ajaxify:opening', args);
-		
+
 		$.ajax({
 			url: url,
 			complete: function (data) {
-				openResponse(data, target, settings, args);
+				openResponse(data, args);
 			}
 		});
 
