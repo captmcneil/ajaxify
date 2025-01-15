@@ -46,7 +46,7 @@
 
 		const isBootstrap3 = boostrapVersion.substring(0, 1) === '3';
 		const isBootstrap4 = boostrapVersion.substring(0, 1) === '4';
-
+		
 		// we only have one modal and reuse it
 		// this keeps the page clean of duplicate IDs and events on nodes that will never again been shown
 		// the contents of the modal will be removed, when the modal is closed
@@ -55,7 +55,7 @@
 
 		function createModalCloseButton() {
 			if (isBootstrap3 || isBootstrap4) {
-				return $('<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>')
+				return $('<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>')
 			} else {
 				return $('<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>')
 			}
@@ -250,7 +250,8 @@
 					return;
 				}
 
-				panel.parent().removeClass('in');
+				panel.parent().removeClass('in');// bootstrap 3+4
+				panel.parent().removeClass('show');// bootstrap 5
 				targetContainer.append(panel);
 			},
 
@@ -271,7 +272,8 @@
 					return;
 				}
 
-				targetContainer.addClass('in');
+				targetContainer.addClass('in'); // bootstrap 3+4
+				targetContainer.addClass('show'); // bootstrap 5
 
 				$('body').trigger('ajaxify:opened', args);
 			},
@@ -282,7 +284,8 @@
 			hide: function (args) {
 				$('body').trigger('ajaxify:closing', args);
 
-				panel.parent().removeClass('in');
+				panel.parent().removeClass('in'); // bootstrap 3+4
+				panel.parent().removeClass('show'); // bootstrap 5
 
 				// let animaions run through
 				setTimeout(function () {
