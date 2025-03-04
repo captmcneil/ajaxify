@@ -1,4 +1,6 @@
 /**
+ * ajaxify.js v1.0.1
+ *
  * Setting the class 'ajaxify' on a hyperlink will open the target URL inline in the current document,
  * without an IFrame, either as a bootstrap modal or in a specified container element (the 'target').
  * The hyperlinks' click will be converted into an ajax request, and the contents of the response patched into the target element.
