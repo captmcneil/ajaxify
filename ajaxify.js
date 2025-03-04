@@ -395,12 +395,24 @@
 					settings: settings
 				};
 
+				const formData = form.serializeArray();
+
+				// in case we were submitted by a button that has a name and value, add this to the formData, because serialize will not be aware of it
+				const $submitter = $(event.originalEvent.submitter);
+				if ($submitter.length === 1) {
+					const name = $submitter.attr('name');
+					const value = $submitter.attr('value');
+					if (name) {
+						formData.push({ name: name, value: value });
+					}
+				}
+
 				$('body').trigger('ajaxify:opening', args);
 
 				$.ajax({
 					url: url,
 					method: method,
-					data: form.serialize(),
+					data: formData,
 					dataType: 'text/html',
 					complete: function (data) {
 						openResponse(data, args);
