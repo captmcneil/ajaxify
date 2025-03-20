@@ -1,5 +1,5 @@
 /**
- * ajaxify.js v1.0.1
+ * ajaxify.js v1.1.0
  *
  * Setting the class 'ajaxify' on a hyperlink will open the target URL inline in the current document,
  * without an IFrame, either as a bootstrap modal or in a specified container element (the 'target').
@@ -52,8 +52,8 @@
 		// we only have one modal and reuse it
 		// this keeps the page clean of duplicate IDs and events on nodes that will never again been shown
 		// the contents of the modal will be removed, when the modal is closed
-		const modal = createModal();
-		$('body').append(modal);
+		const $modal = createModal();
+		$('body').append($modal);
 
 		function createModalCloseButton() {
 			if (isBootstrap3 || isBootstrap4) {
@@ -69,31 +69,31 @@
 		 * @returns The modal.
 		 */
 		function createModal() {
-			const modal = $('<div class="modal fade ajax-response-target" role="dialog">'),
-				modalDialog = $('<div class="modal-dialog">'),
-				modalContent = $('<div class="modal-content">'),
-				modalBody = $('<div class="modal-body">'),
-				modalHeader = $('<div class="modal-header">'),
-				modalCloseButton = createModalCloseButton();
+			const $modal = $('<div class="modal fade ajax-response-target" role="dialog">'),
+				$modalDialog = $('<div class="modal-dialog">'),
+				$modalContent = $('<div class="modal-content">'),
+				$modalBody = $('<div class="modal-body">'),
+				$modalHeader = $('<div class="modal-header">'),
+				$modalCloseButton = createModalCloseButton();
 
 			// bootstrap 3 uses float layout, so it makes sense to add the close button first
 			if (isBootstrap3) {
-				modalHeader.append(modalCloseButton);
-				modalContent.append(modalHeader);
+				$modalHeader.append($modalCloseButton);
+				$modalContent.append($modalHeader);
 			} else {
-				modalContent.append(modalHeader);
-				modalHeader.append(modalCloseButton);
+				$modalContent.append($modalHeader);
+				$modalHeader.append($modalCloseButton);
 			}
-			modalContent.append(modalBody);
-			modalDialog.append(modalContent);
-			modal.append(modalDialog);
-			return modal;
+			$modalContent.append($modalBody);
+			$modalDialog.append($modalContent);
+			$modal.append($modalDialog);
+			return $modal;
 		}
 
 		/**
 		 * Clear the bootstrap modal content after the hide event was issued, in order to avoid unnecessary event registrations, duplicate IDs and such.
 		 */
-		modal.on('hidden.bs.modal', function () {
+		$modal.on('hidden.bs.modal', function () {
 			const args = {
 				target: that
 			};
@@ -106,14 +106,14 @@
 		/**
 		 * Handles a user request to close the panel.
 		 */
-		modal.on(
+		$modal.on(
 			'ajaxify:close',
 			() => that.hide({
 				target: that
 			}));
 
 		const that = {
-			element: modal.get(0),
+			element: $modal.get(0),
 
 			/**
 			 * Puts HTML content into the modal.
@@ -125,9 +125,9 @@
 			fill: function (bodyContent, title, size, args) {
 				that.clear(args);
 
-				const modalHeader = modal.find('.modal-header');
-				const modalBody = modal.find('.modal-body');
-				const modalDialog = modal.find('.modal-dialog');
+				const modalHeader = $modal.find('.modal-header');
+				const modalBody = $modal.find('.modal-body');
+				const modalDialog = $modal.find('.modal-dialog');
 
 				if (isBootstrap3) {
 					// restore the close button
@@ -166,7 +166,7 @@
 			 */
 			show: function (_, args) {
 				// show the modal, if it is not already visible
-				modal.modal('show');
+				$modal.modal('show');
 
 				$('body').trigger('ajaxify:opened', args);
 			},
@@ -177,7 +177,7 @@
 			hide: function (args) {
 				$('body').trigger('ajaxify:closing', args);
 
-				modal.modal('hide');
+				$modal.modal('hide');
 				that.clear(args);
 
 				$('body').trigger('ajaxify:closed', args);
@@ -187,14 +187,14 @@
 			 * We call this when the current modal is being closed, or before its content is being replaced.
 			 */
 			clear: function (args) {
-				const modalHeader = modal.find('.modal-header');
-				const modalBody = modal.find('.modal-body');
-				const modalDialog = modal.find('.modal-dialog');
+				const $modalHeader = $modal.find('.modal-header');
+				const $modalBody = $modal.find('.modal-body');
+				const $modalDialog = $modal.find('.modal-dialog');
 
-				modalHeader.empty();
-				modalBody.empty();
-				modalDialog.removeClass('modal-sm');
-				modalDialog.removeClass('modal-lg');
+				$modalHeader.empty();
+				$modalBody.empty();
+				$modalDialog.removeClass('modal-sm');
+				$modalDialog.removeClass('modal-lg');
 
 				$('body').trigger('ajaxify:cleared', args);
 			}
@@ -209,19 +209,19 @@
 	 * @returns {object} The interface object.
 	 */
 	function createPanelTarget() {
-		const panel = $('<div class="ajax-response-target">');
+		const $panel = $('<div class="ajax-response-target">');
 
 		/**
 		 * Handles a user request to close the panel.
 		 */
-		panel.on(
+		$panel.on(
 			'ajaxify:close',
 			() => that.hide({
 				target: that
 			}));
 
 		const that = {
-			element: panel.get(0),
+			element: $panel.get(0),
 
 			/**
 			 * Puts HTML content into the panel.
@@ -232,7 +232,7 @@
 			 */
 			fill: function (bodyContent, title, size, args) {
 				that.clear(args);
-				panel.append(bodyContent);
+				$panel.append(bodyContent);
 			},
 
 			/**
@@ -246,15 +246,15 @@
 					return;
 				}
 
-				const targetContainer = $(targetContainerSelector);
-				if (targetContainer.length !== 1) {
+				const $targetContainer = $(targetContainerSelector);
+				if ($targetContainer.length !== 1) {
 					console.error('ajaxify: Target element not found or ambiguous selector.');
 					return;
 				}
 
-				panel.parent().removeClass('in');// bootstrap 3+4
-				panel.parent().removeClass('show');// bootstrap 5
-				targetContainer.append(panel);
+				$panel.parent().removeClass('in');// bootstrap 3+4
+				$panel.parent().removeClass('show');// bootstrap 5
+				$targetContainer.append($panel);
 			},
 
 			/**
@@ -268,14 +268,14 @@
 					return;
 				}
 
-				const targetContainer = $(targetContainerSelector);
-				if (targetContainer.length !== 1) {
+				const $targetContainer = $(targetContainerSelector);
+				if ($targetContainer.length !== 1) {
 					console.error('ajaxify: Target element not found or ambiguous selector.');
 					return;
 				}
 
-				targetContainer.addClass('in'); // bootstrap 3+4
-				targetContainer.addClass('show'); // bootstrap 5
+				$targetContainer.addClass('in'); // bootstrap 3+4
+				$targetContainer.addClass('show'); // bootstrap 5
 
 				$('body').trigger('ajaxify:opened', args);
 			},
@@ -286,8 +286,8 @@
 			hide: function (args) {
 				$('body').trigger('ajaxify:closing', args);
 
-				panel.parent().removeClass('in'); // bootstrap 3+4
-				panel.parent().removeClass('show'); // bootstrap 5
+				$panel.parent().removeClass('in'); // bootstrap 3+4
+				$panel.parent().removeClass('show'); // bootstrap 5
 
 				// let animaions run through
 				setTimeout(function () {
@@ -300,7 +300,7 @@
 			 * We call this when the current panel is being closed, or before its content is being replaced.
 			 */
 			clear: function (args) {
-				panel.empty();
+				$panel.empty();
 
 				$('body').trigger('ajaxify:cleared', args);
 			}
@@ -325,15 +325,15 @@
 		// search the body for a fitting content element - 
 		// either the specified contentSelector, the < main > element or the whole body, if nothing was specified
 		// important: add contents to an empty div, otherwise find won't find anything if the main is the direct child
-		const body = $('<div>').append(bodyMatchArray[0]);
+		const $body = $('<div>').append(bodyMatchArray[0]);
 		if (contentSelector) {
-			return body.find(contentSelector).children();
+			return $body.find(contentSelector).children();
 		} else {
-			const main = body.find('main');
-			if (main.length === 1) {
-				return main.children();
+			const $main = $body.find('main');
+			if ($main.length === 1) {
+				return $main.children();
 			} else {
-				return body.children();
+				return $body.children();
 			}
 		}
 	}
@@ -347,6 +347,7 @@
 		const responseText = response.responseText;
 		const target = args.target;
 		const settings = args.settings;
+
 		if (!responseText) {
 			console.error('ajaxify: The page could not be displayed (responseText was empty).');
 			const errorMessage = $('<p>');
@@ -375,97 +376,41 @@
 		if (settings.handleFormSubmit) {
 			// if the content contains a form, we put the response of the form submission into this modal as well
 			// this allows for forms to be put in modals
-
-			function ajaxSubmitHandler(event) {
-				const form = $(event.currentTarget);
-
-				// cancel the form submit and submit the form via ajax
-				// idea being, that we wanna patch the response in the modal
-				event.preventDefault();
-
-				const url = form.attr('action') || '';
-				const method = form.attr('method') || 'get';
-
-				if (!url) {
-					console.error('ajaxify: Form submit could not be ajax-ified, because the form action is empty.');
-					return false;
-				}
-
-				const args = {
-					url: url,
-					target: target,
-					settings: settings
-				};
-
-				const formData = form.serializeArray();
-
-				// in case we were submitted by a button that has a name and value, add this to the formData, because serialize will not be aware of it
-				const $submitter = $(event.originalEvent.submitter);
-				if ($submitter.length === 1) {
-					const name = $submitter.attr('name');
-					const value = $submitter.attr('value');
-					if (name) {
-						formData.push({ name: name, value: value });
-					}
-				}
-
-				$('body').trigger('ajaxify:opening', args);
-
-				$.ajax({
-					url: url,
-					method: method,
-					data: formData,
-					dataType: 'text/html',
-					complete: function (data) {
-						openResponse(data, args);
-					}
-				});
-			}
-
 			// if the body content is the form, register the event on it, otherwise search for the form
 			const directFormChilds = bodyContent.toArray().filter(aContent => aContent.tagName.toLowerCase() === 'form');
 			if (directFormChilds.length > 0) {
-				$(directFormChilds).on('submit', ajaxSubmitHandler);
+				$(directFormChilds).on('submit', event => handleAjaxSubmit(event, target, settings));
 			} else {
-				bodyContent.on('submit', 'form', ajaxSubmitHandler);
+				bodyContent.on('submit', 'form', event => handleAjaxSubmit(event, target, settings));
 			}
 		}
 
 		target.append(settings.targetContainerSelector, args);
-
 		$('body').trigger('ajaxify:ajax-content-loaded', args);
-
 		target.show(settings.targetContainerSelector, args);
 	}
 
 	/**
-	 * Registers an event handler on all links that should be opened inline.
+	 * Handles a submit event asynchronously. The event gets prevented and converted into an AJAX request.
+	 * 
+	 * @param {object} event The original submit event.
+	 * @param {object} target The target object in which the response will be shown.
+	 * @param {object} settings The ajaxify settings object.
 	 */
-	$(document).on('click', '.ajaxify', function (event) {
-		const size = $(event.currentTarget).data('modal-size'),
-			title = $(event.currentTarget).attr('title'),
-			url = $(event.currentTarget).attr('href') || $(event.currentTarget).data('target'),
-			contentSelector = $(event.currentTarget).data('content-selector'),
-			handleFormSubmit = !!$(event.currentTarget).data('handle-form-submit'),
-			targetContainerSelector = $(event.currentTarget).data('target-container-selector');
+	function handleAjaxSubmit(event, target, settings) {
+		const $form = $(event.currentTarget);
+
+		// cancel the form submit and submit the form via ajax
+		// idea being, that we wanna patch the response in the modal
+		event.preventDefault();
+
+		const url = $form.attr('action') || '';
+		const method = $form.attr('method') || 'get';
 
 		if (!url) {
-			console.error('ajaxify: Element cannot be ajaxified, because neither a href nor a data-target are specified.');
+			console.error('ajaxify: Form submit could not be ajax-ified, because the form action is empty.');
 			return false;
 		}
-
-		const settings = {
-			title: title,
-			size: size,
-			contentSelector: contentSelector,
-			handleFormSubmit: handleFormSubmit,
-			targetContainerSelector: targetContainerSelector
-		};
-
-		// whether we use a modal or a panel
-		const useModal = !targetContainerSelector;
-
-		const target = getTarget(useModal);
 
 		const args = {
 			url: url,
@@ -473,16 +418,79 @@
 			settings: settings
 		};
 
+		const formData = $form.serializeArray();
+
+		// in case we were submitted by a button that has a name and value, add this to the formData, because serialize will not be aware of it
+		const $submitter = $(event.originalEvent.submitter);
+		if ($submitter.length === 1) {
+			const name = $submitter.attr('name');
+			const value = $submitter.attr('value');
+			if (name) {
+				formData.push({
+					name: name,
+					value: value
+				});
+			}
+		}
+
 		$('body').trigger('ajaxify:opening', args);
 
 		$.ajax({
 			url: url,
+			method: method,
+			data: formData,
+			dataType: 'text/html',
 			complete: function (data) {
 				openResponse(data, args);
 			}
 		});
+	}
 
-		// disable href link behaviour
+	/**
+	 * Registers an event handler on links and forms that should be opened or submitted inline.
+	 */
+	$('body').on('click submit', '.ajaxify', function (event) {
+		const $eventTarget = $(event.currentTarget);
+
+		const settings = {
+			title: $eventTarget.attr('title'),
+			size: $eventTarget.data('modal-size'),
+			contentSelector: $eventTarget.data('content-selector'),
+			handleFormSubmit: !!$eventTarget.data('handle-form-submit'),
+			targetContainerSelector: $eventTarget.data('target-container-selector')
+		};
+
+		// whether we use a modal or a panel
+		const useModal = !settings.targetContainerSelector;
+		const target = getTarget(useModal);
+
+		// check whether .ajaxify was configured on a link or a form
+		if (event.type === 'submit' && event.currentTarget.tagName === 'FORM') {
+			handleAjaxSubmit(event, target, settings);
+		} else {
+			const url = $eventTarget.attr('href') || $eventTarget.data('target');
+			if (!url) {
+				console.error('ajaxify: Element cannot be ajaxified, because neither a href nor a data-target are specified.');
+				return false;
+			}
+
+			const args = {
+				url: url,
+				target: target,
+				settings: settings
+			};
+
+			$('body').trigger('ajaxify:opening', args);
+
+			$.ajax({
+				url: url,
+				complete: function (data) {
+					openResponse(data, args);
+				}
+			});
+		}
+
+		// disable default href or form-submit event behaviour
 		return false;
 	});
 }());
