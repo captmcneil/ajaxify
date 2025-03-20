@@ -252,9 +252,16 @@
 					return;
 				}
 
-				$panel.parent().removeClass('in');// bootstrap 3+4
-				$panel.parent().removeClass('show');// bootstrap 5
-				$targetContainer.append($panel);
+				$panel.parent().removeClass('in'); // bootstrap 3+4
+				$panel.parent().removeClass('show'); // bootstrap 5
+
+				// remove all children except our ajax response target panel
+				// usually this should be empty already, but when ajaxifying <form>s directly, we need to remove the original form 
+				// and replace it with the one from the response
+				$targetContainer.children().not($panel).remove();
+				if (!$.contains($targetContainer, $panel)) {
+					$targetContainer.append($panel);
+				}
 			},
 
 			/**
@@ -449,7 +456,20 @@
 	/**
 	 * Registers an event handler on links and forms that should be opened or submitted inline.
 	 */
-	$('body').on('click submit', '.ajaxify', function (event) {
+	$('body').on('click', '.ajaxify', ajaxify);
+
+	/**
+	 * Registers an event handler on links and forms that should be opened or submitted inline.
+	 */
+	$('body').on('submit', 'form.ajaxify', ajaxify);
+
+	function ajaxify(event) {
+		// forms only handle submit
+		const isForm = event.currentTarget.tagName === 'FORM';
+		if (event.type === 'click' && isForm) {
+			return;
+		}
+
 		const $eventTarget = $(event.currentTarget);
 
 		const settings = {
@@ -465,7 +485,7 @@
 		const target = getTarget(useModal);
 
 		// check whether .ajaxify was configured on a link or a form
-		if (event.type === 'submit' && event.currentTarget.tagName === 'FORM') {
+		if (event.type === 'submit' && isForm) {
 			handleAjaxSubmit(event, target, settings);
 		} else {
 			const url = $eventTarget.attr('href') || $eventTarget.data('target');
@@ -492,5 +512,5 @@
 
 		// disable default href or form-submit event behaviour
 		return false;
-	});
+	}
 }());
