@@ -476,7 +476,7 @@
 			title: $eventTarget.attr('title'),
 			size: $eventTarget.data('modal-size'),
 			contentSelector: $eventTarget.data('content-selector'),
-			handleFormSubmit: !!$eventTarget.data('handle-form-submit'),
+			handleFormSubmit: !!$eventTarget.data('handle-form-submit') || isForm,
 			targetContainerSelector: $eventTarget.data('target-container-selector')
 		};
 
