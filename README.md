@@ -1,10 +1,10 @@
 # ajaxify
-Patches the response of a hyperlink into the current page, like a div or bootstrap modal, without using IFrames.
+Patches the response of a hyperlink or form submit into the current page, like a div or bootstrap modal, without using IFrames.
 
 ## Dependencies
 
 * jQuery
-* Bootstrap 3-5 (not necessary)
+* Bootstrap 3-5 (optional)
 
 ## Example
 
@@ -15,6 +15,16 @@ The response of this link will be opened in a bootstrap modal:
 You can specify a `data-target-container-selector` to open the link in your own HTML element instead. This also removes any dependency on bootstrap:
 
 `<a href="/my-url" class="ajaxify" data-target-container-selector="#my-container">Open my url in a div!</a>`
+
+If your form is already on your page, you can ajaxify it like so:
+
+`<div id="form-container">
+  <form method="post" action="/send-form" class="ajaxify" data-target-container-selector="#form-container">
+    <button type="submit">Submit!</button>
+  </form>
+</div>`
+
+In this case, the form will be replaced with the response.
 
 ## Configuration settings
 
