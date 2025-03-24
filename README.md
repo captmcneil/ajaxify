@@ -19,7 +19,7 @@ You can specify a `data-target-container-selector` to open the link in your own 
 <div id="my-container"></div>
 ```
 
-If you want to submit a form via ajax, you can do that as well:
+If you want to submit a form via AJAX, you can do that as well:
 
 ```
 <div id="form-container">
@@ -29,11 +29,11 @@ If you want to submit a form via ajax, you can do that as well:
 </div>
 ```
 
-In this case, the form will be replaced with the response.
+On submit, the form will be replaced with the response.
 
 ## Configuration settings
 
-The following attributes can be added to the `<a>` element:
+The following attributes can be added to the `<a>` or `<form>` element:
 
 | Attribute name | Description |
 | - | - |
