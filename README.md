@@ -18,11 +18,13 @@ You can specify a `data-target-container-selector` to open the link in your own 
 
 If your form is already on your page, you can ajaxify it like so:
 
-`<div id="form-container">
+```
+<div id="form-container">
   <form method="post" action="/send-form" class="ajaxify" data-target-container-selector="#form-container">
     <button type="submit">Submit!</button>
   </form>
-</div>`
+</div>
+```
 
 In this case, the form will be replaced with the response.
 
