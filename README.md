@@ -14,9 +14,12 @@ The response of this link will be opened in a bootstrap modal:
 
 You can specify a `data-target-container-selector` to open the link in your own HTML element instead. This also removes any dependency on bootstrap:
 
-`<a href="/my-url" class="ajaxify" data-target-container-selector="#my-container">Open my url in a div!</a>`
+```
+<a href="/my-url" class="ajaxify" data-target-container-selector="#my-container">Open my url in a div!</a>
+<div id="my-container"></div>
+```
 
-If your form is already on your page, you can ajaxify it like so:
+If you want to submit a form via ajax, you can do that as well:
 
 ```
 <div id="form-container">
