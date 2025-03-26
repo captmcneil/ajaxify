@@ -1,5 +1,5 @@
 /**
- * ajaxify.js v1.1.0
+ * ajaxify.js v1.1.1
  *
  * Setting the class 'ajaxify' on a hyperlink will open the target URL inline in the current document,
  * without an IFrame, either as a bootstrap modal or in a specified container element (the 'target').
@@ -147,6 +147,8 @@
 
 				if (size === 'large') {
 					modalDialog.addClass('modal-lg');
+				} else if (size === 'extra-large') {
+					modalDialog.addClass('modal-xl');
 				} else if (size === 'small') {
 					modalDialog.addClass('modal-sm');
 				}
@@ -195,6 +197,7 @@
 				$modalBody.empty();
 				$modalDialog.removeClass('modal-sm');
 				$modalDialog.removeClass('modal-lg');
+				$modalDialog.removeClass('modal-xl');
 
 				$('body').trigger('ajaxify:cleared', args);
 			}
